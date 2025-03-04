@@ -22,7 +22,7 @@
                 return;
             }
             
-            const response = await fetch('/analyze', {
+            const response = await fetch('https://seo-analyzer-v9xr.onrender.com', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ url })
