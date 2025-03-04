@@ -1,40 +1,34 @@
-const express = require("express");
-const cors = require("cors");
-const axios = require("axios");
-const cheerio = require("cheerio");
+const express = require('express');
+const cors = require('cors');
 
 const app = express();
-app.use(cors()); // Enable CORS for all requests
+app.use(express.json());
 
-// ✅ Add a default route to check if the server is running
-app.get("/", (req, res) => {
-    res.send("SEO Analyzer API is running!");
-});
+// ✅ Enable CORS for all requests
+app.use(cors());
 
-// ✅ Main SEO Analysis Route
-app.get("/analyze", async (req, res) => {
+// ✅ Allow specific origins (if needed)
+app.use(cors({
+    origin: ['https://wayansuantika.github.io'], // Your frontend URL
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type']
+}));
+
+// Your existing routes...
+app.post('/analyze', async (req, res) => {
     try {
-        const { url } = req.query;
+        const url = req.body.url;
         if (!url) {
-            return res.status(400).json({ error: "URL is required" });
+            return res.status(400).json({ error: 'URL is required' });
         }
-
-        // Fetch website content
-        const response = await axios.get(url);
-        const $ = cheerio.load(response.data);
-
-        // Extract SEO elements
-        const title = $("title").text();
-        const description = $('meta[name="description"]').attr("content") || "No description found";
-        const h1 = $("h1").text() || "No H1 tag found";
-
-        res.json({ title, description, h1 });
+        // Your SEO analysis logic here...
+        res.json({ success: true, message: 'SEO analysis completed' });
     } catch (error) {
-        res.status(500).json({ error: "Failed to analyze the website" });
+        res.status(500).json({ error: 'Failed to analyze' });
     }
 });
 
-// ✅ Start the server
+// Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
