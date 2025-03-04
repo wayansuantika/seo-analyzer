@@ -4,13 +4,14 @@ const axios = require("axios");
 const cheerio = require("cheerio");
 
 const app = express();
-app.use(cors()); // Enable CORS
+app.use(cors()); // Enable CORS for all requests
 
+// ✅ Add a default route to check if the server is running
 app.get("/", (req, res) => {
     res.send("SEO Analyzer API is running!");
 });
 
-// SEO Analysis Route
+// ✅ Main SEO Analysis Route
 app.get("/analyze", async (req, res) => {
     try {
         const { url } = req.query;
@@ -18,11 +19,11 @@ app.get("/analyze", async (req, res) => {
             return res.status(400).json({ error: "URL is required" });
         }
 
-        // Fetch the website content
+        // Fetch website content
         const response = await axios.get(url);
         const $ = cheerio.load(response.data);
 
-        // Extract SEO details
+        // Extract SEO elements
         const title = $("title").text();
         const description = $('meta[name="description"]').attr("content") || "No description found";
         const h1 = $("h1").text() || "No H1 tag found";
@@ -33,6 +34,7 @@ app.get("/analyze", async (req, res) => {
     }
 });
 
+// ✅ Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
