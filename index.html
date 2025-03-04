@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEO Analyzer</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>SEO Analyzer</h1>
+        <input type="text" id="websiteURL" placeholder="Enter website URL">
+        <button onclick="analyzeSEO()">Analyze</button>
+        <div id="results"></div>
+    </div>
+
+    <script>
+        async function analyzeSEO() {
+            const url = document.getElementById('websiteURL').value;
+            if (!url) {
+                alert("Please enter a URL");
+                return;
+            }
+            
+            const response = await fetch('/analyze', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url })
+            });
+
+            const data = await response.json();
+            displayResults(data);
+        }
+
+        function displayResults(data) {
+            if (data.error) {
+                document.getElementById('results').innerHTML = `<p class='error'>${data.error}</p>`;
+                return;
+            }
+            
+            document.getElementById('results').innerHTML = `
+                <h2>Results</h2>
+                <p><strong>Title:</strong> ${data.metaTags.title}</p>
+                <p><strong>Description:</strong> ${data.metaTags.description}</p>
+                <p><strong>Keywords:</strong> ${data.metaTags.keywords}</p>
+                <p><strong>H1 Count:</strong> ${data.headings.h1}</p>
+                <p><strong>H2 Count:</strong> ${data.headings.h2}</p>
+                <p><strong>H3 Count:</strong> ${data.headings.h3}</p>
+                <p><strong>Total Images:</strong> ${data.images.totalImages}</p>
+                <p><strong>Images Missing Alt:</strong> ${data.images.missingAlt}</p>
+                <p><strong>PageSpeed Score:</strong> ${data.pageSpeed}</p>
+            `;
+        }
+    </script>
+</body>
+</html>
